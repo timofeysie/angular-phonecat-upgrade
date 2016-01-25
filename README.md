@@ -1,4 +1,38 @@
-# AngularJS Phone Catalog Tutorial Application
+# AngularJS Phone Catalog Tutorial Application as starting point for an Angular2 app.
+
+Following along starting at [step 4.1 of the official Angular2 upgrade guide](https://angular.io/docs/ts/latest/guide/upgrade.html#!#phonecat-upgrade-tutorial).
+
+## Problems
+
+After install, you must run npm and Bower to install the development and runtime libraries that are excluded in the .gitignore file so that pulls and pushes do not include them:
+$ (sudo) npm install
+$ cd app
+$ bower intsll
+$ (sudo) npm start
+
+If you get errors like this, then you forgot to run bower install:
+http://localhost:8000/app/bower_components/bootstrap/dist/css/bootstrap.css 
+Failed to load resource: the server responded with a status of 404 (Not Found)
+...
+
+$ (sudo) npm test
+
+INFO [launcher]: Trying to start Chrome again (1/2).
+ERROR [launcher]: Cannot start Chrome
+INFO [launcher]: Trying to start Chrome again (2/2).
+INFO [Chrome 47.0.2526 (Mac OS X 10.10.0)]: Connected on socket wYEfbWBSR9JEW03AyRAL with id 92756211
+WARN [launcher]: Firefox have not captured in 60000 ms, killing.
+INFO [launcher]: Trying to start Firefox again (2/2).
+INFO [Firefox 43.0.0 (Mac OS X 10.10.0)]: Connected on socket ASFKIyMGrtWVdnFnyRAN with id 69311123
+Chrome 47.0.2526 (Mac OS X 10.10.0) ERROR
+  Uncaught ReferenceError: angular is not defined
+  at /Users/tim/angular/ng2/angular-phonecat/app/js/animations.js:1
+Chrome 47.0.2526 (Mac OS X 10.10.0) ERROR
+  Uncaught ReferenceError: angular is not defined
+  at /Users/tim/angular/ng2/angular-phonecat/app/js/animations.js:1
+Firefox 43.0.0 (Mac OS X 10.10.0) ERROR
+  ReferenceError: angular is not defined
+
 
 ## Overview
 
