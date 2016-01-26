@@ -2,21 +2,77 @@
 
 Following along starting at [step 4.1 of the official Angular2 upgrade guide](https://angular.io/docs/ts/latest/guide/upgrade.html#!#phonecat-upgrade-tutorial).
 
+
+## The Steps
+eamless.
+
+1. Preparation
+Following The Angular Style Guide
+Using a Module Loader
+Migrating to TypeScript
+Using Component Directives
+2. Upgrading with The Upgrade Adapter
+How The Upgrade Adapter Works
+Bootstrapping Hybrid Angular 1+2 Applications
+Using Angular 2 Components from Angular 1 Code
+Using Angular 1 Component Directives from Angular 2 Code
+Projecting Angular 1 Content into Angular 2 Components
+Transcluding Angular 2 Content into Angular 1 Component Directives
+Making Angular 1 Dependencies Injectable to Angular 2
+Making Angular 2 Dependencies Injectable to Angular 1
+3. PhoneCat Preparation Tutorial
+Switching to TypeScript And Module Loading
+Preparing Unit and E2E Tests
+Enjoying The Benefits of TypeScript
+4. PhoneCat Upgrade Tutorial
+Bootstrapping A Hybrid 1+2 PhoneCat
+Upgrading the Phone factory
+Upgrading Controllers to Components
+Switching To The Angular 2 Router And Bootstrap
+Saying Goodbye to Angular 1
+
+### 3 PhoneCat Preparation Tutorial
+The seed for this project is different from the original PhoneCat application in that it closely adheres to the Style Guide by John Papa.
+Namely, each controller, factory, and filter is in its own source file, as per the Rule of 1.
+Core, phoneDetail, & phoneList modules are each in their own subdirectories in line with the Folders-by-Feature Structure and Modularity rules.
+
+### 3.1 Switching to TypeScript And Module Loading
+
+We will use [SystemJS](https://github.com/systemjs/systemjs) to install TypeScript.
+We install its type definitions separately with tsd the TypeScript definition manager.
+```
+$ (sudo) npm i systemjs --save
+$ (sudo) npm i typescript --save-dev
+$ (sudo) npm i -g tsd
+$ tsd install angular angular-route angular-resource angular-mocks jasmine
+```
+
+Add a <script> tag that loads the SystemJS library and a second <script> tag that initializes it in index.html. 
+
+
+
+
 ## Problems
 
 After install, you must run npm and Bower to install the development and runtime libraries that are excluded in the .gitignore file so that pulls and pushes do not include them:
+```
 $ (sudo) npm install
 $ cd app
 $ bower intsll
 $ (sudo) npm start
-
+```
 If you get errors like this, then you forgot to run bower install:
+```
 http://localhost:8000/app/bower_components/bootstrap/dist/css/bootstrap.css 
 Failed to load resource: the server responded with a status of 404 (Not Found)
 ...
 
 $ (sudo) npm test
-
+ 
+Chrome 47.0.2526 (Mac OS X 10.10.0): Executed 5 of 5 SUCCESS (0.169 secs / 0.165 secs)
+Firefox 43.0.0 (Mac OS X 10.10.0): Executed 5 of 5 SUCCESS (0.187 secs / 0.185 secs)
+```
+If you get errors like this, that may also means you forgot to run bower install.
 INFO [launcher]: Trying to start Chrome again (1/2).
 ERROR [launcher]: Cannot start Chrome
 INFO [launcher]: Trying to start Chrome again (2/2).
@@ -32,7 +88,7 @@ Chrome 47.0.2526 (Mac OS X 10.10.0) ERROR
   at /Users/tim/angular/ng2/angular-phonecat/app/js/animations.js:1
 Firefox 43.0.0 (Mac OS X 10.10.0) ERROR
   ReferenceError: angular is not defined
-
+```
 
 ## Overview
 
