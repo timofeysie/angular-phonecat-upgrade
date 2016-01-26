@@ -1,6 +1,7 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-resource.d.ts" />
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
+'format register';
 import core from './core/core.module';
 import phoneList from './phone_list/phone_list.module';
 import phoneDetail from './phone_detail/phone_detail.module';

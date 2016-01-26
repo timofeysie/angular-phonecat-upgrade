@@ -46,7 +46,6 @@ $ tsd install angular angular-route angular-resource angular-mocks jasmine
 ```
 
 Add a script tag that loads the SystemJS library and a second script tag that initializes it in index.html. 
-
 Add a "tsc": "tsc -p . -w" line to package.json and a tsconfig.json file to specify ES5 as the target language for deployments.
 
 We can now run this:
@@ -77,17 +76,38 @@ export default angular.module('phonecat.detail', [
   .controller('PhoneDetailCtrl', PhoneDetailCtrl);
 ```
 
-The ng-app attribute is processed when the page loads, and our application code will not be available at that point yet. It is loaded asynchronously by SystemJS instead.  So we must use the bootstrap version from part 2.2.
+The ng-app attribute is processed when the page loads, and our application code will not be available at that point yet. 
+It is loaded asynchronously by SystemJS instead.  
+So we must use the bootstrap version from part 2.2.
 
 After completing all these steps, doing (sudo) npm start, errors like this come out in the console:
 ```
-app.module.ts:3Uncaught ReferenceError: System is not defined(anonymous function) @ app.module.ts:3
-core.module.js:1Uncaught ReferenceError: System is not 
+app.module.ts:3
+Uncaught ReferenceError: System is not defined(anonymous function) @ app.module.ts:3
+core.module.js:1
+Uncaught ReferenceError: System is not defined
 ```
 There were some old import statements in the index.html, so  getting rid of those, the error is now:
 ```
 Uncaught (in promise) Error: [$injector:nomod] Module 'phonecat.core' is not available! You either misspelled the module name or forgot to load it. If registering a module ensure that you specify the dependencies as the second argument.
 ```
+The docs say this error occurs when you declare a dependency on a module that isn't defined anywhere or hasn't been loaded in the current browser context.
+Maybe the System.config section in the index,html is not working?
+If I include the script tags in the index.html then there are different errors.
+
+The stack trace includes this: SystemJSLoader.register:
+```
+Uncaught TypeError: Unexpected anonymous System.register call.
+(anonymous function) @ system.src.js:2879
+(anonymous function) @ system.src.js:3518
+(anonymous function) @ system.src.js:3987
+(anonymous function) @ system.src.js:2602
+SystemJSLoader.register @ system.src.js:2835
+(anonymous function) @ app.module.js:1
+```
+[This issue here](https://github.com/systemjs/systemjs/issues/861) has been happening since October.
+
+I followed some advice and added 'format register'; to the top of the file to no avail.
 
 ## Other Problems
 
