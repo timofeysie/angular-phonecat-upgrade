@@ -4,32 +4,30 @@ Following along starting at [step 4.1 of the official Angular2 upgrade guide](ht
 
 
 ## The Steps
-eamless.
 
-1. Preparation
-Following The Angular Style Guide
-Using a Module Loader
-Migrating to TypeScript
-Using Component Directives
-2. Upgrading with The Upgrade Adapter
-How The Upgrade Adapter Works
-Bootstrapping Hybrid Angular 1+2 Applications
-Using Angular 2 Components from Angular 1 Code
-Using Angular 1 Component Directives from Angular 2 Code
-Projecting Angular 1 Content into Angular 2 Components
-Transcluding Angular 2 Content into Angular 1 Component Directives
-Making Angular 1 Dependencies Injectable to Angular 2
-Making Angular 2 Dependencies Injectable to Angular 1
-3. PhoneCat Preparation Tutorial
-Switching to TypeScript And Module Loading
-Preparing Unit and E2E Tests
-Enjoying The Benefits of TypeScript
-4. PhoneCat Upgrade Tutorial
-Bootstrapping A Hybrid 1+2 PhoneCat
-Upgrading the Phone factory
-Upgrading Controllers to Components
-Switching To The Angular 2 Router And Bootstrap
-Saying Goodbye to Angular 1
+Step 1. Preparation
+- 1.2 Following The Angular Style Guide
+- 1.3 Using a Module Loader
+- 1.4 Migrating to TypeScript
+- 1.5 Using Component Directives
+
+Step 2. Upgrading with The Upgrade Adapter
+- 2.1 Bootstrapping Hybrid Angular 1+2 Applications
+- 2.2 Using Angular 1/2 Components from Angular 1/2 Code
+- 2.4 Projecting/Transcluding Angular 1/2 Content into Angular 1/2 Components
+- 2.6 Making Angular 1/2 Dependencies Injectable to Angular 1/2
+
+Step 3. PhoneCat Preparation Tutorial
+- 3.1 Switching to TypeScript And Module Loading
+- 3.2 Preparing Unit and E2E Tests
+- 3.3 Enjoying The Benefits of TypeScript
+
+Step 4. PhoneCat Upgrade Tutorial
+- 4.1 Bootstrapping A Hybrid 1+2 PhoneCat
+- 4.2 Upgrading the Phone factory
+- 4.3 Upgrading Controllers to Components
+- 4.4 Switching To The Angular 2 Router And Bootstrap
+- 4.5 Saying Goodbye to Angular 1
 
 ### 3 PhoneCat Preparation Tutorial
 The seed for this project is different from the original PhoneCat application in that it closely adheres to the Style Guide by John Papa.
@@ -47,12 +45,51 @@ $ (sudo) npm i -g tsd
 $ tsd install angular angular-route angular-resource angular-mocks jasmine
 ```
 
-Add a <script> tag that loads the SystemJS library and a second <script> tag that initializes it in index.html. 
+Add a script tag that loads the SystemJS library and a second script tag that initializes it in index.html. 
 
+Add a "tsc": "tsc -p . -w" line to package.json and a tsconfig.json file to specify ES5 as the target language for deployments.
 
+We can now run this:
+```
+$ npm run tsc
+```
+It will watch our .ts source files and compile them to JavaScript on the fly. Those compiled .js files are then loaded into the browser by SystemJS. This is a process we will want to have continuously running in the background as we go along.
 
+Next, convert .js files to .ts and define their imports and exports rather than things being available on the global window scope.  Also add references to the .d.ts TypeScript definition files we added before in the typings directory so that dot complete and mouseover api info will be available in the editor.  We are using VS Code to work on this project.  It's a great editor based on GitHub's own Atom extensible editor.  Well done MS, finally getting hip to the open source thing people have been on about for twenty years.
+This measn adding lines like this to the top of each file:
+/// <reference path="../../typings/angularjs/angular.d.ts" />
 
-## Problems
+Things like this:
+```
+angular.module('phonecat.detail', [
+  'ngRoute',
+  'ngAnimate',
+  'phonecat.core'
+]);
+```
+become like this:
+```
+import PhoneDetailCtrl from './phone_detail.controller';
+export default angular.module('phonecat.detail', [
+    'phonecat.core',
+    'ngRoute'
+  ])
+  .controller('PhoneDetailCtrl', PhoneDetailCtrl);
+```
+
+The ng-app attribute is processed when the page loads, and our application code will not be available at that point yet. It is loaded asynchronously by SystemJS instead.  So we must use the bootstrap version from part 2.2.
+
+After completing all these steps, doing (sudo) npm start, errors like this come out in the console:
+```
+app.module.ts:3Uncaught ReferenceError: System is not defined(anonymous function) @ app.module.ts:3
+core.module.js:1Uncaught ReferenceError: System is not 
+```
+There were some old import statements in the index.html, so  getting rid of those, the error is now:
+```
+Uncaught (in promise) Error: [$injector:nomod] Module 'phonecat.core' is not available! You either misspelled the module name or forgot to load it. If registering a module ensure that you specify the dependencies as the second argument.
+```
+
+## Other Problems
 
 After install, you must run npm and Bower to install the development and runtime libraries that are excluded in the .gitignore file so that pulls and pushes do not include them:
 ```
