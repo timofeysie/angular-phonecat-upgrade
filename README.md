@@ -76,10 +76,27 @@ export default angular.module('phonecat.detail', [
   .controller('PhoneDetailCtrl', PhoneDetailCtrl);
 ```
 
+### Bootstrapping TypeScript
 The ng-app attribute is processed when the page loads, and our application code will not be available at that point yet. 
-It is loaded asynchronously by SystemJS instead.  
-So we must use the bootstrap version from part 2.2.
+So now is loaded asynchronously by SystemJS instead.  
+We must use the bootstrap version from part 2.2.
+Add this to app.mudule.ts:
+angular.bootstrap(document.documentElement, ['phonecatApp']);
 
+Then, in the index.html file, add this:
+<script>
+  System.config({
+    packages: {'js': {defaultExtension: 'js'}}
+  });
+  System.import('js/app.module');
+</script>
+
+Another version from later in the docs uses this
+System.import('js/app');
+
+The first one is correct.  Now the app is bootstrapped and running TS!
+
+###Problem: System is not defined(anonymous function)
 After completing all these steps, doing (sudo) npm start, errors like this come out in the console:
 ```
 app.module.ts:3
@@ -108,6 +125,31 @@ SystemJSLoader.register @ system.src.js:2835
 [This issue here](https://github.com/systemjs/systemjs/issues/861) has been happening since October.
 
 I followed some advice and added 'format register'; to the top of the file to no avail.
+
+angular.bootstrap(document.body, ['heroApp'], {strictDi: true});
+
+Uncaught TypeError: Unexpected anonymous System.register call.
+hint.js:199 Uncaught Error: [$injector:nomod] Module 'phonecat.detail' is not available! You either misspelled the module name or forgot to load it. If registering a module ensure that you specify the dependencies as the second argument.
+
+Or the whole thing inside the script tag in index.html
+
+```
+    import {UpgradeAdapter} from 'angular2/upgrade';
+    angular.bootstrap(document.body, ['heroApp'], {strictDi: true});
+    const upgradeAdapter = new UpgradeAdapter();
+    upgradeAdapter.bootstrap(document.body, ['heroApp'], {strictDi: true});
+```    
+Another StackOverflow answer says this: 
+6
+down vote
+You will get " Unexpected anonymous System.register call" because the references are not being loaded 
+in the correct order. I use JSPM to properly build my angular app for production. 
+There are 4 parts to the process (with one finally).
+Part 1: Compile your typescript files
+Part 2: Configure config.json (to tell JSPM how to bundle your app):
+Part 3: Use gulp-jspm to bundle up your app
+Part 4: Now minify and concat all your assets:
+Part 5: Finally, put one nice tidy script reference into your index.html:
 
 ## Other Problems
 

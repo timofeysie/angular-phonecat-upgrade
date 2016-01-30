@@ -4,7 +4,6 @@ export default angular.module('phonecat.detail', [
     'ngRoute'
   ])
   .controller('PhoneDetailCtrl', PhoneDetailCtrl);
-
 /*
 'use strict';
 

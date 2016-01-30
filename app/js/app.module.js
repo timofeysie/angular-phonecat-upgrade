@@ -1,8 +1,4 @@
 System.register(['./core/core.module', './phone_list/phone_list.module', './phone_detail/phone_detail.module'], function(exports_1) {
-    /// <reference path="../../typings/angularjs/angular.d.ts" />
-    /// <reference path="../../typings/angularjs/angular-resource.d.ts" />
-    /// <reference path="../../typings/angularjs/angular-route.d.ts" />
-    'format register';
     var core_module_1, phone_list_module_1, phone_detail_module_1;
     function configure($routeProvider) {
         $routeProvider.

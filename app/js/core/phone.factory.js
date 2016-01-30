@@ -1,5 +1,4 @@
 System.register([], function(exports_1) {
-    'use strict';
     function Phone($resource) {
         return $resource('phones/:phoneId.json', {}, {
             query: { method: 'GET', params: { phoneId: 'phones' }, isArray: true }
@@ -8,8 +7,6 @@ System.register([], function(exports_1) {
     return {
         setters:[],
         execute: function() {
-            angular.module('phonecat.core')
-                .factory('Phone', Phone);
             Phone.$inject = ['$resource'];
             exports_1("default",Phone);
         }
