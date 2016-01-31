@@ -1,7 +1,6 @@
 <div class="phone-images">
-  <img ng-src="{{img}}"
+  <img ng-src="{{vm.mainImageUrl}}"
        class="phone"
-       ng-repeat="img in vm.phone.images"
        ng-class="{active: vm.mainImageUrl==img}">
 </div>
 

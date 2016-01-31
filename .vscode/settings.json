@@ -1,0 +1,6 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "**/*.js": {"when": "$(basename).ts"},
+    "**/*.js": true,
+    "**/*.js.map": true
+}

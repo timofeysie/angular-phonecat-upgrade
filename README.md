@@ -3,38 +3,40 @@
 Following along starting at [step 4.1 of the official Angular2 upgrade guide](https://angular.io/docs/ts/latest/guide/upgrade.html#!#phonecat-upgrade-tutorial).
 
 
-## The Steps
+## The Conversion Steps
+Phase 1 & 2 are all that are needed to upgrade an Angular 1.x app to Angular 2.
+Phase 3 & 4 are educational that demonstrate Phase 1 & 2 techniques on the sample app created during the official Angular 1.x tutorial.
 
-Step 1. Preparation
+### Phase 1. Preparation
 - 1.2 Following The Angular Style Guide
 - 1.3 Using a Module Loader
 - 1.4 Migrating to TypeScript
 - 1.5 Using Component Directives
 
-Step 2. Upgrading with The Upgrade Adapter
+### Phase 2. Upgrading with The Upgrade Adapter
 - 2.1 Bootstrapping Hybrid Angular 1+2 Applications
-- 2.2 Using Angular 1/2 Components from Angular 1/2 Code
-- 2.4 Projecting/Transcluding Angular 1/2 Content into Angular 1/2 Components
-- 2.6 Making Angular 1/2 Dependencies Injectable to Angular 1/2
+- 2.2 Using Angular 1/2 Components from Angular 2/1 Code
+- 2.4 Projecting/Transcluding Angular 1/2 Content into Angular 2/1 Components
+- 2.6 Making Angular 1/2 Dependencies Injectable to Angular 2/1
 
-Step 3. PhoneCat Preparation Tutorial
+### Phase 3. PhoneCat Preparation Tutorial
 - 3.1 Switching to TypeScript And Module Loading
 - 3.2 Preparing Unit and E2E Tests
 - 3.3 Enjoying The Benefits of TypeScript
 
-Step 4. PhoneCat Upgrade Tutorial
+### Pase 4. PhoneCat Upgrade Tutorial
 - 4.1 Bootstrapping A Hybrid 1+2 PhoneCat
 - 4.2 Upgrading the Phone factory
 - 4.3 Upgrading Controllers to Components
 - 4.4 Switching To The Angular 2 Router And Bootstrap
 - 4.5 Saying Goodbye to Angular 1
 
-### 3 PhoneCat Preparation Tutorial
+### PhoneCat Preparation Tutorial (Phase 3 Intro)
 The seed for this project is different from the original PhoneCat application in that it closely adheres to the Style Guide by John Papa.
 Namely, each controller, factory, and filter is in its own source file, as per the Rule of 1.
 Core, phoneDetail, & phoneList modules are each in their own subdirectories in line with the Folders-by-Feature Structure and Modularity rules.
 
-### 3.1 Switching to TypeScript And Module Loading
+### Switching to TypeScript And Module Loading (Phase 3.1)
 
 We will use [SystemJS](https://github.com/systemjs/systemjs) to install TypeScript.
 We install its type definitions separately with tsd the TypeScript definition manager.
@@ -95,8 +97,157 @@ Another version from later in the docs uses this
 System.import('js/app');
 
 The first one is correct.  Now the app is bootstrapped and running TS!
+However, the detail page images cannot be changed.  What's up with that?
 
-###Problem: System is not defined(anonymous function)
+
+## Converting Unit Tests (Phase 3.2)
+
+Add this file to the project in tests: test_helper.ts
+/// <reference path="../typings/jasmine/jasmine.d.ts" />
+/// <reference path="../typings/angularjs/angular-mocks.d.ts" />
+For Karma's SystemJS support we'll use a shim file: karma_test_shim.js (be replaced by improved tooling, but is currently needed).
+We're using the custom Jasmine matcher toEqualData which isn't included in the Jasmine type definitions that we installed using tsd.
+We have to:
+- 1. convert our existing unit tests to TypeScript.
+- 2. use imports to load in the code they need. 
+- 3. tweak our Karma configuration so that it'll let SystemJS load the application files.
+
+
+## The Benefits of TypeScript
+Since everyone is going to ask, it's good to have a few things to point out about this.
+- Compiles to ES5
+- Supports let and const, default function parameters, and destructuring assignments, ect.
+- classes (controllers => classes prepares for Angular 2 component classes)
+- added type safety
+- enable the noImplicitAny configuration option in tsconfig.json. This displays warnings when there's any code that does not yet have type annotations. We could use it as a guide to inform us about how close we are to having a fully annotated project.
+
+The classes is inportant for controllers to prepare them to become Angular 2 component classes.
+Register a class as a controller and Angular 1 will use it. 
+
+## Angular 2 (Phase 4)
+
+This is where the real fun happens.  This is running Angular 1 inside of Angular 2 and vice versa.
+
+
+### Problem: cannot run in wd %s %s (wd=%s) in Phase 4 setup
+After adding dependencies to the package.json:
+  "dependencies": {
+    "angular2": "2.0.0-beta.2",
+    "systemjs": "0.19.6",
+    "es6-promise": "^3.0.2",
+    "es6-shim": "^0.33.3",
+    "reflect-metadata": "0.1.2",
+    "rxjs": "5.0.0-beta.0",
+    "zone.js": "0.5.10"
+  },
+  "devDependencies": {
+    "concurrently": "^1.0.0",
+    "lite-server": "^1.3.4",
+    "typescript": "^1.7.5"
+  }
+Then running npm i, got this warning:
+npm WARN lifecycle angular-phonecat@0.0.0~postinstall: cannot run in wd %s %s (wd=%s) angular-phonecat@0.0.0 bower install /Users/tim/angular/ng2/angular-phonecat
+In addition, those packeage were not installed.
+After reading (this post)[http://stackoverflow.com/questions/18136746/npm-install-failed-with-cannot-run-in-wd]
+I tried:
+```
+sudo npm install --unsafe-perm
+```
+and got this:
+```
+bower ESUDO         Cannot be run with sudo
+Additional error details:
+Since bower is a user command, there is no need to execute it with superuser permissions.
+If you're having permission errors when using bower without sudo, please spend a few minutes learning more about how your system should work and make any necessary repairs.
+http://www.joyent.com/blog/installing-node-and-npm
+https://gist.github.com/isaacs/579814
+You can however run a command with sudo using --allow-root option
+npm ERR! Darwin 14.0.0
+npm ERR! argv "node" "/usr/local/bin/npm" "install" "--unsafe-perm"
+npm ERR! node v0.10.35
+npm ERR! npm  v3.5.2
+npm ERR! code ELIFECYCLE
+npm ERR! angular-phonecat@0.0.0 postinstall: `bower install`
+npm ERR! Exit status 1
+```
+This is because bower cannot be run using sudo.  Those packages are all node, so why is Bower now complaining.
+Hasn't it been run every time npm runs anyhow?
+Also, we don't want to have to use a flag everytime we run npm, so we can add the unsafe-perm flag to your package.json:
+```
+"config": {
+    "unsafe-perm":true
+}
+```
+But I then wasn't able to save package.json, as the permissions for that and node_modules had been changed to root.
+I did a
+```
+$ chown tim package.json (and node_modules also)
+```
+And was then able save the file.  Was that actually the problem though?
+Anyhow, now running npm start, the npm install is done automatically, and I saw those dependencies downloaded.
+
+
+### Problem:  The phone detail main image is not changing
+After phase 3.2, I noticed that the image detail picture was not changing after selecting a different thumbnail.
+The tutorial showed using an interface to define the route parameters, using a class and good programming style.
+However, I had to make the setImage method public.  Then the method was registering the url change.
+This did not solve the problem, so looking at the template, there was an mistaken ng-repeat, and the ng-source was wrong.
+Here is the corrected version:
+```
+<div class="phone-images">
+  <img ng-src="{{vm.mainImageUrl}}"
+       class="phone"
+       ng-class="{active: vm.mainImageUrl==img}">
+</div>
+```
+
+
+### Problem: Uncaught (in promise) Error: Cannot set property '$inject' of undefined(…)
+If the inject statement comes before the class then this will happen.
+Before becomming a class, this line was above the function delcaration, now it must be below it:
+```
+PhoneListCtrl.$inject = ['Phone'];
+```
+For example, the evolution of the phone list controller from newest to oldest versions.
+Work done in the controller function is now done in the class constructor function.
+```
+class PhoneListCtrl {
+  phones:any[];
+  orderProp:string;
+  query:string;
+  constructor(Phone) {
+    this.phones = Phone.query();
+    this.orderProp = 'age';
+  }
+}
+PhoneListCtrl.$inject = ['Phone'];
+export default PhoneListCtrl;
+```
+Before becoming a class
+```
+PhoneListCtrl.$inject = ['Phone'];
+function PhoneListCtrl(Phone) {
+  var vm = this;
+  vm.phones = Phone.query();
+  vm.orderProp = 'age';
+}
+export default PhoneListCtrl;
+```
+The original
+```
+'use strict';
+angular.module('phonecat.list')
+  .controller('PhoneListCtrl', PhoneListCtrl);
+PhoneListCtrl.$inject = ['Phone'];
+function PhoneListCtrl(Phone) {
+  var vm = this;
+  vm.phones = Phone.query();
+  vm.orderProp = 'age';
+}
+```
+
+
+### Problem: System is not defined(anonymous function)
 After completing all these steps, doing (sudo) npm start, errors like this come out in the console:
 ```
 app.module.ts:3
@@ -145,13 +296,16 @@ down vote
 You will get " Unexpected anonymous System.register call" because the references are not being loaded 
 in the correct order. I use JSPM to properly build my angular app for production. 
 There are 4 parts to the process (with one finally).
-Part 1: Compile your typescript files
-Part 2: Configure config.json (to tell JSPM how to bundle your app):
-Part 3: Use gulp-jspm to bundle up your app
-Part 4: Now minify and concat all your assets:
-Part 5: Finally, put one nice tidy script reference into your index.html:
+- Part 1: Compile your typescript files
+- Part 2: Configure config.json (to tell JSPM how to bundle your app):
+- Part 3: Use gulp-jspm to bundle up your app
+- Part 4: Now minify and concat all your assets:
+- Part 5: Finally, put one nice tidy script reference into your index.html:
+The problem was one of the files was still not converted, as I missed on in all the excitment.
+After updating the file to ts and bootstrapping the app correctly these errors went away.
 
-## Other Problems
+
+## After Insitial Install Problems
 
 After install, you must run npm and Bower to install the development and runtime libraries that are excluded in the .gitignore file so that pulls and pushes do not include them:
 ```
