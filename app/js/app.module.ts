@@ -2,8 +2,12 @@
 /// <reference path="../../typings/angularjs/angular-resource.d.ts" />
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
 import core from './core/core.module';
+// import {UpgradeAdapter} from 'angular2/upgrade';
 import phoneList from './phone_list/phone_list.module';
 import phoneDetail from './phone_detail/phone_detail.module';
+import {HTTP_PROVIDERS} from 'angular2/http';
+import upgradeAdapter from './core/upgrade_adapter';
+
 angular.module('phonecatApp', [
   'ngAnimate',
   'ngRoute',
@@ -28,8 +32,11 @@ function configure($routeProvider) {
       redirectTo: '/phones'
     });
 }
-
-angular.bootstrap(document.documentElement, ['phonecatApp']);
+// const upgradeAdapter = new UpgradeAdapter();
+// upgradeAdapter.addProvider(HTTP_PROVIDERS);
+// upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
+/* Before, angular was bootstrapped this: */
+//angular.bootstrap(document.documentElement, ['phonecatApp']);
 /*
 We don't have to repeat the submodule name strings here. Since the modules export themselves, 
 we can just refer to the name attribute of each of them.

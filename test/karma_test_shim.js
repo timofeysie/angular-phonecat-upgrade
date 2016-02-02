@@ -15,17 +15,20 @@ System.config({
               pathsMapping[moduleName] = appPath + '?' + window.__karma__.files[appPath]
               return pathsMapping;
             }, {})
-      }
     }
+  }
 });
-Promise.all(
-  Object.keys(window.__karma__.files) // All files served by Karma.
-  .filter(onlySpecFiles)
-  .map(function(moduleName) {
-    // loads all spec files via their global module names
-    return System.import(moduleName);
-}))
-.then(function() {
+System.import('angular2/src/platform/browser/browser_adapter').then(function(browser_adapter) {
+  browser_adapter.BrowserDomAdapter.makeCurrent();
+}).then(function() {
+  return Promise.all(
+    Object.keys(window.__karma__.files) // All files served by Karma.
+    .filter(onlySpecFiles)
+    .map(function(moduleName) {
+      // loads all spec files via their global module names
+      return System.import(moduleName);
+  }));
+}).then(function() {
   __karma__.start();
 }, function(error) {
   __karma__.error(error.stack || error);

@@ -36,10 +36,14 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
                 phone_detail_module_1.default.name
             ]).config(configure);
             configure.$inject = ['$routeProvider'];
-            angular.bootstrap(document.documentElement, ['phonecatApp']);
         }
     }
 });
+// const upgradeAdapter = new UpgradeAdapter();
+// upgradeAdapter.addProvider(HTTP_PROVIDERS);
+// upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
+/* Before, angular was bootstrapped this: */
+//angular.bootstrap(document.documentElement, ['phonecatApp']);
 /*
 We don't have to repeat the submodule name strings here. Since the modules export themselves,
 we can just refer to the name attribute of each of them.

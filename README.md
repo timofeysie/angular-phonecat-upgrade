@@ -128,6 +128,92 @@ Register a class as a controller and Angular 1 will use it.
 
 This is where the real fun happens.  This is running Angular 1 inside of Angular 2 and vice versa.
 
+## Bootstrapping A Hybrid 1+2
+Set the TypeScript compiler's moduleResolution option to node, so that it knows to look for these definitions from the angular2 NPM package.
+```
+"moduleResolution": "node",
+```
+Remove the Jasmine type definitions as they are bundled with Angular now.
+```
+$ rm -r typings/jasmine
+```
+Next, initialize an UpgradeAdapter. 
+import the UpgradeAdapter class into app.module.ts:
+```
+import {UpgradeAdapter} from 'angular2/upgrade';
+```
+Then, add this:
+```
+const upgradeAdapter = new UpgradeAdapter();
+```
+Not sure about the exact place to put this in the file.
+Now instead of calling angular.bootstrap, we must call upgradeAdapter.bootstrap:
+```
+upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
+```
+Then the app breaks with the following errors:
+```
+system.src.js:1068 GET http://localhost:8000/app/rxjs/Subject 404 (Not Found)
+fetchTextFromURL @ system.src.js:1068(anonymous function) @ system.src.js:1638lib$es6$promise$$internal$$initializePromise @ angular2-polyfills.js:1558lib$es6$promise$promise$$Promise @ angular2-polyfills.js:1849(anonymous function) @ system.src.js:1637(anonymous function) @ system.src.js:2637(anonymous function) @ system.src.js:3204(anonymous function) @ system.src.js:3463(anonymous function) @ system.src.js:4076(anonymous function) @ system.src.js:4284(anonymous function) @ system.src.js:4526(anonymous function) @ system.src.js:326run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$$internal$$tryCatch @ angular2-polyfills.js:1511lib$es6$promise$$internal$$invokeCallback @ angular2-polyfills.js:1523lib$es6$promise$$internal$$publish @ angular2-polyfills.js:1494(anonymous function) @ angular2-polyfills.js:243run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$asap$$flush @ angular2-polyfills.js:1305
+system.src.js:1068 GET http://localhost:8000/app/rxjs/observable/fromPromise 404 (Not Found)fetchTextFromURL @ system.src.js:1068(anonymous function) @ system.src.js:1638lib$es6$promise$$internal$$initializePromise @ angular2-polyfills.js:1558lib$es6$promise$promise$$Promise @ angular2-polyfills.js:1849(anonymous function) @ system.src.js:1637(anonymous function) @ system.src.js:2637(anonymous function) @ system.src.js:3204(anonymous function) @ system.src.js:3463(anonymous function) @ system.src.js:4076(anonymous function) @ system.src.js:4284(anonymous function) @ system.src.js:4526(anonymous function) @ system.src.js:326run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$$internal$$tryCatch @ angular2-polyfills.js:1511lib$es6$promise$$internal$$invokeCallback @ angular2-polyfills.js:1523lib$es6$promise$$internal$$publish @ angular2-polyfills.js:1494(anonymous function) @ angular2-polyfills.js:243run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$asap$$flush @ angular2-polyfills.js:1305
+system.src.js:1068 GET http://localhost:8000/app/rxjs/operator/toPromise 404 (Not Found)fetchTextFromURL @ system.src.js:1068(anonymous function) @ system.src.js:1638lib$es6$promise$$internal$$initializePromise @ angular2-polyfills.js:1558lib$es6$promise$promise$$Promise @ angular2-polyfills.js:1849(anonymous function) @ system.src.js:1637(anonymous function) @ system.src.js:2637(anonymous function) @ system.src.js:3204(anonymous function) @ system.src.js:3463(anonymous function) @ system.src.js:4076(anonymous function) @ system.src.js:4284(anonymous function) @ system.src.js:4526(anonymous function) @ system.src.js:326run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$$internal$$tryCatch @ angular2-polyfills.js:1511lib$es6$promise$$internal$$invokeCallback @ angular2-polyfills.js:1523lib$es6$promise$$internal$$publish @ angular2-polyfills.js:1494(anonymous function) @ angular2-polyfills.js:243run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$asap$$flush @ angular2-polyfills.js:1305
+system.src.js:1068 GET http://localhost:8000/app/rxjs/Observable 404 (Not Found)fetchTextFromURL @ system.src.js:1068(anonymous function) @ system.src.js:1638lib$es6$promise$$internal$$initializePromise @ angular2-polyfills.js:1558lib$es6$promise$promise$$Promise @ angular2-polyfills.js:1849(anonymous function) @ system.src.js:1637(anonymous function) @ system.src.js:2637(anonymous function) @ system.src.js:3204(anonymous function) @ system.src.js:3463(anonymous function) @ system.src.js:4076(anonymous function) @ system.src.js:4284(anonymous function) @ system.src.js:4526(anonymous function) @ system.src.js:326run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$$internal$$tryCatch @ angular2-polyfills.js:1511lib$es6$promise$$internal$$invokeCallback @ angular2-polyfills.js:1523lib$es6$promise$$internal$$publish @ angular2-polyfills.js:1494(anonymous function) @ angular2-polyfills.js:243run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$asap$$flush @ angular2-polyfills.js:1305
+```
+Looking in the network tab of the Chrome inspector, I can see the rxjs is not being imported.
+The very next part of the section addresses this:
+```
+<script src="../node_modules/rxjs/bundles/Rx.js"></script>
+<script src="../node_modules/angular2/bundles/http.dev.js"></script>
+```
+After adding these however, rxjs is being loaded, and there are no console errors in the inspector, but the page is blank.
+Not often does an app throw up a blank page without any errors.  That's not very helpful.
+
+### Pase 2.2 Using Angular 2 component in Angular 1
+The file naming scheme is now Phone.ts, not feature.type.ts naming convention anymore.
+UpgradeAdapter has a downgradeNg2Provider method for the purpose of making Angular2 services available to Angular1 code. 
+We don't have our UpgradeAdapter available in core.module.ts where the Phones service should be registered. 
+We only have it in app.module.ts. There should only be one UpgradeAdapter in an application, 
+so we need to find a way to share our instance between the two code modules.
+Create a new module that instantiates UpgradeAdapter and exports the instance.
+We can then just pull it in wherever we need it, so that we're using the same object everywhere. 
+New file: app/js/core/upgrade_adapter.ts
+(Looks like the naming convention doesn't apply here).
+
+At this point, the app is showing a blank screen and no errors in the console, and no file not found on the network.  Not very helpful.
+Definitely a bootstrap issue.
+There were some problems with the tests not being able to find the typings, so lots of errors in the console.
+I had to change the path after removing the typings for Jasmine which now come with Angular2. 
+However, the mocks still cannot be found:
+test/test_helper.ts(2,1): error TS6053: File 'node_modules/angular2/typings/angularjs/angular-mocks.d.ts' not found.
+test/unit/checkmark.filter.spec.ts(6,14): error TS2349: Cannot invoke an expression whose type lacks a call signature.
+
+
+
+
+
+### Problem: Cannot find name 'module'.
+Sometime around the beginning of Phase 4, after running:
+```
+$ npm run tsc
+```
+I saw these messages in the console before the watch started:
+```
+test/unit/checkmark.filter.spec.ts(6,14): error TS2304: Cannot find name 'module'.
+test/unit/phone.factory.spec.ts(6,14): error TS2304: Cannot find name 'module'.
+test/unit/phone_detail.controller.spec.ts(22,14): error TS2304: Cannot find name 'module'.
+test/unit/phone_list.controller.spec.ts(15,14): error TS2304: Cannot find name 'module'.
+```
+
+After removing the typings which are now supposed to be bundled with Angular 2, we are getting errors from all the test files:
+```
+test/unit/phone_list.controller.spec.ts(15,14): error TS2349: Cannot invoke an expression whose type lacks a call signature.
+test/unit/phone_list.controller.spec.ts(17,3): error TS2304: Cannot find name 'beforeEach'.
+test/unit/phone_list.controller.spec.ts(25,3): error TS2304: Cannot find name 'it'.
+test/unit/phone_list.controller.spec.ts(26,5): error TS2304: Cannot find name 'expect'.
+```
+
+Don't have time to spend on this one just yet.  Trying to get the the fun stuff right now.
+
 
 ### Problem: cannot run in wd %s %s (wd=%s) in Phase 4 setup
 After adding dependencies to the package.json:
