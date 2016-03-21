@@ -6,8 +6,9 @@ import core from './core/core.module';
 import phoneList from './phone_list/phone_list.module';
 import phoneDetail from './phone_detail/phone_detail.module';
 import {HTTP_PROVIDERS} from 'angular2/http';
-import upgradeAdapter from './core/upgrade_adapter';
-
+//import upgradeAdapter from './core/upgrade_adapter';
+import {UpgradeAdapter} from 'angular2/upgrade';
+ 
 angular.module('phonecatApp', [
   'ngAnimate',
   'ngRoute',
@@ -15,6 +16,7 @@ angular.module('phonecatApp', [
   phoneList.name,
   phoneDetail.name
 ]).config(configure);
+
 configure.$inject = ['$routeProvider'];
 function configure($routeProvider) {
   $routeProvider.
@@ -31,9 +33,24 @@ function configure($routeProvider) {
     otherwise({
       redirectTo: '/phones'
     });
+    // const upgradeAdapter = new UpgradeAdapter();
+    // upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
 }
+
 // const upgradeAdapter = new UpgradeAdapter();
-// upgradeAdapter.addProvider(HTTP_PROVIDERS);
+// upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
+
+// var upgradeAdapter = new UpgradeAdapter();
+// angular.element(document.body).ready(function() {
+//   upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
+// });
+// var upgradeAdapter = new ng.upgrade.UpgradeAdapter();
+// angular.element(document.body).ready(function() {
+//   upgradeAdapter.bootstrap(document.body, ['app']);
+// });
+
+
+//upgradeAdapter.addProvider(HTTP_PROVIDERS);
 // upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
 /* Before, angular was bootstrapped this: */
 //angular.bootstrap(document.documentElement, ['phonecatApp']);

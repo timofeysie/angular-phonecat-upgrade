@@ -1,11 +1,36 @@
 # AngularJS Phone Catalog Tutorial Application as starting point for an Angular2 app.
 
 Following along starting at [step 4.1 of the official Angular2 upgrade guide](https://angular.io/docs/ts/latest/guide/upgrade.html#!#phonecat-upgrade-tutorial).
+Currently the project is in phase 2.1 of the migration steps.  The tutorial says "the key is to do this piece by piece without breaking the application"
+
+The issue seems to be using the upgrade adapter to boot the app.  Following along with the section "Bootstrapping A Hybrid 1+2 PhoneCat", the app is failing to boot.
+The symptoms are a blank screen and no errors in the console.
+It's not clear where to put the bootstrap methods in the app/js/app.module.ts file.
+The docs do not specify where the following code should go.  These are its exact words:
+
+    We can then make an adapter by instantiating the class:
+    ```
+    const upgradeAdapter = new UpgradeAdapter();
+    ```
+    Now we can use that adapter to bootstrap our application as a hybrid. Instead of calling angular.bootstrap, we must call upgradeAdapter.bootstrap, but the function arguments remain the same: They are still the element that will become the root of the application, and the names of the root Angular 1.x modules that we want to include:
+    ```
+    upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
+    ```
+    
+Following some advice [here](http://www.codelord.net/2016/01/07/adding-the-first-angular-2-service-to-your-angular-1-app/), I tried this:
+
+```
+var upgradeAdapter = new UpgradeAdapter();
+angular.element(document.body).ready(function() {
+  upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
+});
+```
+Same result: blank sceen, no console output.  what gives?
 
 
 ## The Conversion Steps
 Phase 1 & 2 are all that are needed to upgrade an Angular 1.x app to Angular 2.
-Phase 3 & 4 are educational that demonstrate Phase 1 & 2 techniques on the sample app created during the official Angular 1.x tutorial.
+Phase 3 & 4 are educational and demonstrate Phase 1 & 2 techniques on the sample app created during the official Angular 1.x tutorial.
 
 ### Phase 1. Preparation
 - 1.2 Following The Angular Style Guide
@@ -154,10 +179,8 @@ upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
 Then the app breaks with the following errors:
 ```
 system.src.js:1068 GET http://localhost:8000/app/rxjs/Subject 404 (Not Found)
-fetchTextFromURL @ system.src.js:1068(anonymous function) @ system.src.js:1638lib$es6$promise$$internal$$initializePromise @ angular2-polyfills.js:1558lib$es6$promise$promise$$Promise @ angular2-polyfills.js:1849(anonymous function) @ system.src.js:1637(anonymous function) @ system.src.js:2637(anonymous function) @ system.src.js:3204(anonymous function) @ system.src.js:3463(anonymous function) @ system.src.js:4076(anonymous function) @ system.src.js:4284(anonymous function) @ system.src.js:4526(anonymous function) @ system.src.js:326run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$$internal$$tryCatch @ angular2-polyfills.js:1511lib$es6$promise$$internal$$invokeCallback @ angular2-polyfills.js:1523lib$es6$promise$$internal$$publish @ angular2-polyfills.js:1494(anonymous function) @ angular2-polyfills.js:243run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$asap$$flush @ angular2-polyfills.js:1305
-system.src.js:1068 GET http://localhost:8000/app/rxjs/observable/fromPromise 404 (Not Found)fetchTextFromURL @ system.src.js:1068(anonymous function) @ system.src.js:1638lib$es6$promise$$internal$$initializePromise @ angular2-polyfills.js:1558lib$es6$promise$promise$$Promise @ angular2-polyfills.js:1849(anonymous function) @ system.src.js:1637(anonymous function) @ system.src.js:2637(anonymous function) @ system.src.js:3204(anonymous function) @ system.src.js:3463(anonymous function) @ system.src.js:4076(anonymous function) @ system.src.js:4284(anonymous function) @ system.src.js:4526(anonymous function) @ system.src.js:326run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$$internal$$tryCatch @ angular2-polyfills.js:1511lib$es6$promise$$internal$$invokeCallback @ angular2-polyfills.js:1523lib$es6$promise$$internal$$publish @ angular2-polyfills.js:1494(anonymous function) @ angular2-polyfills.js:243run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$asap$$flush @ angular2-polyfills.js:1305
-system.src.js:1068 GET http://localhost:8000/app/rxjs/operator/toPromise 404 (Not Found)fetchTextFromURL @ system.src.js:1068(anonymous function) @ system.src.js:1638lib$es6$promise$$internal$$initializePromise @ angular2-polyfills.js:1558lib$es6$promise$promise$$Promise @ angular2-polyfills.js:1849(anonymous function) @ system.src.js:1637(anonymous function) @ system.src.js:2637(anonymous function) @ system.src.js:3204(anonymous function) @ system.src.js:3463(anonymous function) @ system.src.js:4076(anonymous function) @ system.src.js:4284(anonymous function) @ system.src.js:4526(anonymous function) @ system.src.js:326run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$$internal$$tryCatch @ angular2-polyfills.js:1511lib$es6$promise$$internal$$invokeCallback @ angular2-polyfills.js:1523lib$es6$promise$$internal$$publish @ angular2-polyfills.js:1494(anonymous function) @ angular2-polyfills.js:243run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$asap$$flush @ angular2-polyfills.js:1305
-system.src.js:1068 GET http://localhost:8000/app/rxjs/Observable 404 (Not Found)fetchTextFromURL @ system.src.js:1068(anonymous function) @ system.src.js:1638lib$es6$promise$$internal$$initializePromise @ angular2-polyfills.js:1558lib$es6$promise$promise$$Promise @ angular2-polyfills.js:1849(anonymous function) @ system.src.js:1637(anonymous function) @ system.src.js:2637(anonymous function) @ system.src.js:3204(anonymous function) @ system.src.js:3463(anonymous function) @ system.src.js:4076(anonymous function) @ system.src.js:4284(anonymous function) @ system.src.js:4526(anonymous function) @ system.src.js:326run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$$internal$$tryCatch @ angular2-polyfills.js:1511lib$es6$promise$$internal$$invokeCallback @ angular2-polyfills.js:1523lib$es6$promise$$internal$$publish @ angular2-polyfills.js:1494(anonymous function) @ angular2-polyfills.js:243run @ angular2-polyfills.js:138zoneBoundFn @ angular2-polyfills.js:111lib$es6$promise$asap$$flush @ angular2-polyfills.js:1305
+fetchTextFromURL @ system.src.js:1068(anonymous function) @ system.src.js:1638lib$es6$promise$$internal$$initializePromise @ angular2-polyfills.js:1558lib$es6$promise$promise$$Promise @ angular2-polyfills.js:1849(anonymous function) @ system.src.js:1637(anonymous function) @ system.src.js:2637
+...
 ```
 Looking in the network tab of the Chrome inspector, I can see the rxjs is not being imported.
 The very next part of the section addresses this:
