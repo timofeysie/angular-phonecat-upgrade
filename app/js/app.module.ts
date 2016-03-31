@@ -4,8 +4,6 @@
 import core from './core/core.module';
 // import {UpgradeAdapter} from 'angular2/upgrade';
 import phoneList from './phone_list/phone_list.module';
-// the PhoneListCtrl cannot be found with the following import:
-//import PhoneListCtrl from './phone_list.controller';
 import phoneDetail from './phone_detail/phone_detail.module';
 import {HTTP_PROVIDERS} from 'angular2/http';
 // Which upgrade adapter is the right one to use?
@@ -14,6 +12,7 @@ import {UpgradeAdapter} from 'angular2/upgrade';
 
 try {
     var upgrade = new UpgradeAdapter();
+    console.log('upgrade adapter created');
 } catch (e) {
   console.error('error',e);
 }

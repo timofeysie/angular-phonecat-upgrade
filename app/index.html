@@ -38,6 +38,12 @@
   System.import('js/app.module');
 </script>
 
+<script>
+      System.import('js/app.module.js').then(function(src) {
+        src.main();
+      });
+    </script>
+
 </head>
 <body>
 

@@ -45,6 +45,7 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
         execute: function() {
             try {
                 upgrade = new upgrade_1.UpgradeAdapter();
+                console.log('upgrade adapter created');
             }
             catch (e) {
                 console.error('error', e);
@@ -70,13 +71,9 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
 // angular.element(document.body).ready(function() {
 //   upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
 // });
-// var upgradeAdapter = new ng.upgrade.UpgradeAdapter();
-// angular.element(document.body).ready(function() {
-//   upgradeAdapter.bootstrap(document.body, ['app']);
-// });
-//upgradeAdapter.addProvider(HTTP_PROVIDERS);
+// upgradeAdapter.addProvider(HTTP_PROVIDERS);
 // upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
-/* Before, angular was bootstrapped this: */
+/* Before, angular was bootstrapped like this: */
 //angular.bootstrap(document.documentElement, ['phonecatApp']);
 /*
 We don't have to repeat the submodule name strings here. Since the modules export themselves,
