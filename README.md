@@ -1,32 +1,17 @@
 # AngularJS Phone Catalog Tutorial Application as starting point for an Angular2 app.
 
 Following along starting at [step 4.1 of the official Angular2 upgrade guide](https://angular.io/docs/ts/latest/guide/upgrade.html#!#phonecat-upgrade-tutorial).
-Currently the project is in phase 2.1 of the migration steps.  The tutorial says "the key is to do this piece by piece without breaking the application"
 
-The issue seems to be using the upgrade adapter to boot the app.  Following along with the section "Bootstrapping A Hybrid 1+2 PhoneCat", the app is failing to boot.
-The symptoms are a blank screen and no errors in the console.
-It's not clear where to put the bootstrap methods in the app/js/app.module.ts file.
-The docs do not specify where the following code should go.  These are its exact words:
+Currently the project is in phase 2.1 of the migration steps.  The tutorial says "the key is to do this piece by piece without breaking the application".
+That's turning out to be not so easy.
 
-    We can then make an adapter by instantiating the class:
-    ```
-    const upgradeAdapter = new UpgradeAdapter();
-    ```
-    Now we can use that adapter to bootstrap our application as a hybrid. Instead of calling angular.bootstrap, we must call upgradeAdapter.bootstrap, but the function arguments remain the same: They are still the element that will become the root of the application, and the names of the root Angular 1.x modules that we want to include:
-    ```
-    upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
-    ```
-    
-Following some advice [here](http://www.codelord.net/2016/01/07/adding-the-first-angular-2-service-to-your-angular-1-app/), I tried this:
+I had an issue with the upgradeProvider and bootstrapping the hybrid ng1/2 app at this stage.
+I posted [this questions](http://stackoverflow.com/questions/36338230/angular2-upgrade-tutorial-code-not-bootstrapping/36339818#36339818) on stack overflow after giving up on it for a month or so.
+The answer provided by Thierry Templier worked out, but now there is an unknown provider error: PhoneProvider <- Phone <- PhoneListCtrl
+The PhoneListCtrl seems to be configured the same way the PhoneDetailsCtrl is.
+Anyhow, this is a more familiar error now, so I'm looking forward to getting it solved and finally getting to the fun part of working on a hybrid Angular1/Aungular2 app.
 
-```
-var upgradeAdapter = new UpgradeAdapter();
-angular.element(document.body).ready(function() {
-  upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
-});
-```
-Same result: blank sceen, no console output.  what gives?
-
+Here are the stages gone thru so far, along with notes from the whole process.
 
 ## The Conversion Steps
 Phase 1 & 2 are all that are needed to upgrade an Angular 1.x app to Angular 2.
