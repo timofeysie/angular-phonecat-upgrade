@@ -4,9 +4,12 @@
 import core from './core/core.module';
 // import {UpgradeAdapter} from 'angular2/upgrade';
 import phoneList from './phone_list/phone_list.module';
+// the PhoneListCtrl cannot be found with the following import:
+//import PhoneListCtrl from './phone_list.controller';
 import phoneDetail from './phone_detail/phone_detail.module';
 import {HTTP_PROVIDERS} from 'angular2/http';
-//import upgradeAdapter from './core/upgrade_adapter';
+// Which upgrade adapter is the right one to use?
+import upgradeAdapter from './core/upgrade_adapter';
 import {UpgradeAdapter} from 'angular2/upgrade';
  
 angular.module('phonecatApp', [
@@ -36,6 +39,11 @@ function configure($routeProvider) {
     // const upgradeAdapter = new UpgradeAdapter();
     // upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
 }
+
+// This will boot the app, but PhoneListCtrl causes an unknown provider error
+upgradeAdapter.bootstrap(document.body, ['phonecatApp']).ready(function() {
+  console.log('yeah it does!');
+});
 
 // const upgradeAdapter = new UpgradeAdapter();
 // upgradeAdapter.bootstrap(document.body, ['phonecatApp']);

@@ -1,5 +1,5 @@
-System.register(['./core/core.module', './phone_list/phone_list.module', './phone_detail/phone_detail.module'], function(exports_1) {
-    var core_module_1, phone_list_module_1, phone_detail_module_1;
+System.register(['./core/core.module', './phone_list/phone_list.module', './phone_detail/phone_detail.module', './core/upgrade_adapter'], function(exports_1) {
+    var core_module_1, phone_list_module_1, phone_detail_module_1, upgrade_adapter_1;
     function configure($routeProvider) {
         $routeProvider.
             when('/phones', {
@@ -15,6 +15,8 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
             otherwise({
             redirectTo: '/phones'
         });
+        // const upgradeAdapter = new UpgradeAdapter();
+        // upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
     }
     return {
         setters:[
@@ -26,6 +28,9 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
             },
             function (phone_detail_module_1_1) {
                 phone_detail_module_1 = phone_detail_module_1_1;
+            },
+            function (upgrade_adapter_1_1) {
+                upgrade_adapter_1 = upgrade_adapter_1_1;
             }],
         execute: function() {
             angular.module('phonecatApp', [
@@ -36,11 +41,24 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
                 phone_detail_module_1.default.name
             ]).config(configure);
             configure.$inject = ['$routeProvider'];
+            // document.body.innerHTML = '<ng2 name="World">project</ng2>';
+            upgrade_adapter_1.default.bootstrap(document.body, ['phonecatApp']).ready(function () {
+                console.log('yeah it does!');
+            });
         }
     }
 });
 // const upgradeAdapter = new UpgradeAdapter();
-// upgradeAdapter.addProvider(HTTP_PROVIDERS);
+// upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
+// var upgradeAdapter = new UpgradeAdapter();
+// angular.element(document.body).ready(function() {
+//   upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
+// });
+// var upgradeAdapter = new ng.upgrade.UpgradeAdapter();
+// angular.element(document.body).ready(function() {
+//   upgradeAdapter.bootstrap(document.body, ['app']);
+// });
+//upgradeAdapter.addProvider(HTTP_PROVIDERS);
 // upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
 /* Before, angular was bootstrapped this: */
 //angular.bootstrap(document.documentElement, ['phonecatApp']);
