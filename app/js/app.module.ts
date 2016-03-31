@@ -11,6 +11,20 @@ import {HTTP_PROVIDERS} from 'angular2/http';
 // Which upgrade adapter is the right one to use?
 import upgradeAdapter from './core/upgrade_adapter';
 import {UpgradeAdapter} from 'angular2/upgrade';
+
+try {
+    var upgrade = new UpgradeAdapter();
+} catch (e) {
+  console.error('error',e);
+}
+
+export function main() {
+  try {
+    upgrade.bootstrap(document.body, ['phonecatApp']);
+  } catch (e) {
+    console.error(e);
+  }
+}
  
 angular.module('phonecatApp', [
   'ngAnimate',
@@ -41,9 +55,9 @@ function configure($routeProvider) {
 }
 
 // This will boot the app, but PhoneListCtrl causes an unknown provider error
-upgradeAdapter.bootstrap(document.body, ['phonecatApp']).ready(function() {
-  console.log('yeah it does!');
-});
+// upgradeAdapter.bootstrap(document.body, ['phonecatApp']).ready(function() {
+//   console.log('yeah it does!');
+// });
 
 // const upgradeAdapter = new UpgradeAdapter();
 // upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
@@ -52,15 +66,10 @@ upgradeAdapter.bootstrap(document.body, ['phonecatApp']).ready(function() {
 // angular.element(document.body).ready(function() {
 //   upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
 // });
-// var upgradeAdapter = new ng.upgrade.UpgradeAdapter();
-// angular.element(document.body).ready(function() {
-//   upgradeAdapter.bootstrap(document.body, ['app']);
-// });
 
-
-//upgradeAdapter.addProvider(HTTP_PROVIDERS);
+// upgradeAdapter.addProvider(HTTP_PROVIDERS);
 // upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
-/* Before, angular was bootstrapped this: */
+/* Before, angular was bootstrapped like this: */
 //angular.bootstrap(document.documentElement, ['phonecatApp']);
 /*
 We don't have to repeat the submodule name strings here. Since the modules export themselves, 

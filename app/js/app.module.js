@@ -1,5 +1,15 @@
-System.register(['./core/core.module', './phone_list/phone_list.module', './phone_detail/phone_detail.module', './core/upgrade_adapter'], function(exports_1) {
-    var core_module_1, phone_list_module_1, phone_detail_module_1, upgrade_adapter_1;
+System.register(['./core/core.module', './phone_list/phone_list.module', './phone_detail/phone_detail.module', 'angular2/upgrade'], function(exports_1) {
+    var core_module_1, phone_list_module_1, phone_detail_module_1, upgrade_1;
+    var upgrade, e;
+    function main() {
+        try {
+            upgrade.bootstrap(document.body, ['phonecatApp']);
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+    exports_1("main", main);
     function configure($routeProvider) {
         $routeProvider.
             when('/phones', {
@@ -29,10 +39,16 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
             function (phone_detail_module_1_1) {
                 phone_detail_module_1 = phone_detail_module_1_1;
             },
-            function (upgrade_adapter_1_1) {
-                upgrade_adapter_1 = upgrade_adapter_1_1;
+            function (upgrade_1_1) {
+                upgrade_1 = upgrade_1_1;
             }],
         execute: function() {
+            try {
+                upgrade = new upgrade_1.UpgradeAdapter();
+            }
+            catch (e) {
+                console.error('error', e);
+            }
             angular.module('phonecatApp', [
                 'ngAnimate',
                 'ngRoute',
@@ -41,13 +57,13 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
                 phone_detail_module_1.default.name
             ]).config(configure);
             configure.$inject = ['$routeProvider'];
-            // document.body.innerHTML = '<ng2 name="World">project</ng2>';
-            upgrade_adapter_1.default.bootstrap(document.body, ['phonecatApp']).ready(function () {
-                console.log('yeah it does!');
-            });
         }
     }
 });
+// This will boot the app, but PhoneListCtrl causes an unknown provider error
+// upgradeAdapter.bootstrap(document.body, ['phonecatApp']).ready(function() {
+//   console.log('yeah it does!');
+// });
 // const upgradeAdapter = new UpgradeAdapter();
 // upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
 // var upgradeAdapter = new UpgradeAdapter();
