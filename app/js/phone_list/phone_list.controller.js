@@ -1,3 +1,5 @@
+/**
+ * */
 System.register([], function(exports_1) {
     var PhoneListCtrl;
     return {
@@ -10,7 +12,7 @@ System.register([], function(exports_1) {
                 }
                 return PhoneListCtrl;
             })();
-            PhoneListCtrl.$inject = ['Phone'];
+            PhoneListCtrl.$inject = ['phones'];
             exports_1("default",PhoneListCtrl);
         }
     }

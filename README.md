@@ -5,15 +5,30 @@ Following along starting at [step 4.1 of the official Angular2 upgrade guide](ht
 Currently the project is in phase 2.1 of the migration steps.  The tutorial says "the key is to do this piece by piece without breaking the application".
 That's turning out to be not so easy.
 
-I had an issue with the upgradeProvider and bootstrapping the hybrid ng1/2 app at this stage.
-I posted [this questions](http://stackoverflow.com/questions/36338230/angular2-upgrade-tutorial-code-not-bootstrapping/36339818#36339818) on stack overflow after giving up on it for a month or so.
-The answer provided by Thierry Templier worked out, but now there is an unknown provider error: PhoneProvider <- Phone <- PhoneListCtrl
+I had an issue with the upgradeProvider and bootstrapping the hybrid ng1/2 app at this stage.  After putting the issue on StackOverflow and quickly got a solution.
+
+Now there is an unknown provider error: PhoneProvider <- Phone <- PhoneListCtrl
 The PhoneListCtrl seems to be configured the same way the PhoneDetailsCtrl is.
 Anyhow, this is a more familiar error now, so I'm looking forward to getting it solved and finally getting to the fun part of working on a hybrid Angular1/Aungular2 app.
 
-Here are the stages gone thru so far, along with notes from the whole process.
+### Quick Start
+To run the app, open a console, navigate to the root directory of the app and run:
+```
+$ npm start
+```
+This will run npm install, bower install, and then start the server on port 8000.
+http://localhost:8000/app/#/phones
+For development, run:
+```
+$ npm run tsc
+```
+This will watch the .ts source files and compile them to JavaScript on the fly. 
+Those compiled .js files are then loaded into the browser by SystemJS. 
+
+
 
 ## The Conversion Steps
+Here are the stages gone thru so far, along with notes from the whole process.Phase 1 & 2 are all that are needed to upgrade an Angular 1.x app to Angular 2.
 Phase 1 & 2 are all that are needed to upgrade an Angular 1.x app to Angular 2.
 Phase 3 & 4 are educational and demonstrate Phase 1 & 2 techniques on the sample app created during the official Angular 1.x tutorial.
 
@@ -175,6 +190,87 @@ The very next part of the section addresses this:
 ```
 After adding these however, rxjs is being loaded, and there are no console errors in the inspector, but the page is blank.
 Not often does an app throw up a blank page without any errors.  That's not very helpful.
+The tutorial says "the key is to do this piece by piece without breaking the application".
+That's turning out to be not so easy.
+I posted [this questions](http://stackoverflow.com/questions/36338230/angular2-upgrade-tutorial-code-not-bootstrapping/36339818#36339818) on stack overflow after giving up on it for a month or so.
+The answer provided by Thierry Templier worked out.  He suggested "load the module and then bootstrap the application".
+```
+<script>
+      System.import('js/app.module.js').then(function(src) {
+        src.main();
+      });
+</script>
+```
+
+It's still not clear which import is appropriate here:
+```
+import upgradeAdapter from './core/upgrade_adapter';
+import {UpgradeAdapter} from 'angular2/upgrade';
+
+try {
+    var upgrade = new UpgradeAdapter();
+} catch (e) {
+  console.error('error',e);
+}
+
+export function main() {
+  try {
+    upgrade.bootstrap(document.body, ['phonecatApp']);
+  } catch (e) {
+    console.error(e);
+  }
+}
+```
+
+The confusion with the upgrade adapter is dealt with when removing the phones.factory.ts and replacing it with a phones.service.ts.
+There should only be one UpgradeAdapter in an application, so to share the instance between module we create a new module 
+that instantiates UpgradeAdapter and exports the instance then pull it in wherever we need it, so that we're using the same object everywhere. 
+That's what the upgrade_adapter.ts file is for.
+
+After making this change, which means getting rid of this:
+```
+import {UpgradeAdapter} from 'angular2/upgrade';
+
+try {
+    var upgrade = new UpgradeAdapter();
+} catch (e) {
+  console.error('error',e);
+}
+```
+And just using this import:
+```
+import upgradeAdapter from './core/upgrade_adapter';
+```
+
+Now, there is an error (also, at this point, the tsc - . -w command should be watching for file changes, but it's not):
+```
+Error: No provider for Http! (Phones -> Http)
+Error: DI Exception
+    at NoProviderError.BaseException [as constructor] 
+```
+
+It's not clear where to add http to the upgrade adapter.  Should this me done in the upgrade_adapter.ts, or the core.module.ts?
+
+```
+upgradeAdapter.addProvider(HTTP_PROVIDERS);
+```
+Since the file the tutorial began it's discussionwith is app.module.ts, we can only assume that that's where it should go.
+Looking at that error on SO, a remark about Angular2 said this:
+    The injectables are specified on the @Component
+But since we are talking about an Angulae 1 app, there is no @Component decorator.
+There are no other questions on SO that deal with a hybrid app like this.
+I'm reading up on Angular2 injection to get an idea of what the issue is.
+Right now I'm thinking something needs to be in the contructor.
+
+Doing the following in the core.modules.ts
+```
+import {HTTP_PROVIDERS} from 'angular2/http';
+...
+upgradeAdapter.addProvider(HTTP_PROVIDERS);
+```
+Causes a whole list of this error:
+Error: [filter:notarray] Expected array but received: {"_isScalar":false,"source":{"_isScalar":false},"operator":{}}
+
 
 ### Pase 2.2 Using Angular 2 component in Angular 1
 The file naming scheme is now Phone.ts, not feature.type.ts naming convention anymore.
@@ -194,9 +290,6 @@ I had to change the path after removing the typings for Jasmine which now come w
 However, the mocks still cannot be found:
 test/test_helper.ts(2,1): error TS6053: File 'node_modules/angular2/typings/angularjs/angular-mocks.d.ts' not found.
 test/unit/checkmark.filter.spec.ts(6,14): error TS2349: Cannot invoke an expression whose type lacks a call signature.
-
-
-
 
 
 ### Problem: Cannot find name 'module'.
@@ -385,8 +478,6 @@ Or the whole thing inside the script tag in index.html
     upgradeAdapter.bootstrap(document.body, ['heroApp'], {strictDi: true});
 ```    
 Another StackOverflow answer says this: 
-6
-down vote
 You will get " Unexpected anonymous System.register call" because the references are not being loaded 
 in the correct order. I use JSPM to properly build my angular app for production. 
 There are 4 parts to the process (with one finally).
@@ -399,7 +490,7 @@ The problem was one of the files was still not converted, as I missed on in all 
 After updating the file to ts and bootstrapping the app correctly these errors went away.
 
 
-## After Insitial Install Problems
+## After Initial Install Problems
 
 After install, you must run npm and Bower to install the development and runtime libraries that are excluded in the .gitignore file so that pulls and pushes do not include them:
 ```

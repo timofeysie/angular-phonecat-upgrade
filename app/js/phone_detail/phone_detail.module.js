@@ -6,10 +6,7 @@ System.register(['./phone_detail.controller'], function(exports_1) {
                 phone_detail_controller_1 = phone_detail_controller_1_1;
             }],
         execute: function() {
-            exports_1("default",angular.module('phonecat.detail', [
-                'phonecat.core',
-                'ngRoute'
-            ])
+            exports_1("default",angular.module('phonecat.detail', ['phonecat.core', 'ngRoute'])
                 .controller('PhoneDetailCtrl', phone_detail_controller_1.default));
         }
     }

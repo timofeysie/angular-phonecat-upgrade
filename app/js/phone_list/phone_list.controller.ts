@@ -1,3 +1,8 @@
+/** 
+ * */
+ 
+ import {Phones, Phone} from '../core/phones.service';
+ 
 class PhoneListCtrl {
   phones:any[];
   orderProp:string;
@@ -7,7 +12,7 @@ class PhoneListCtrl {
     this.orderProp = 'age';
   }
 }
-PhoneListCtrl.$inject = ['Phone'];
+PhoneListCtrl.$inject = ['phones'];
 export default PhoneListCtrl;
 
 /*

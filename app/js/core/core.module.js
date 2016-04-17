@@ -12,6 +12,7 @@ System.register(['./Phones', './checkmark.filter', './upgrade_adapter'], functio
                 upgrade_adapter_1 = upgrade_adapter_1_1;
             }],
         execute: function() {
+            //import {HTTP_PROVIDERS} from 'angular2/http';
             upgrade_adapter_1.default.addProvider(Phones_1.Phones);
             exports_1("default",angular.module('phonecat.core', [])
                 .factory('phones', upgrade_adapter_1.default.downgradeNg2Provider(Phones_1.Phones))
@@ -19,6 +20,10 @@ System.register(['./Phones', './checkmark.filter', './upgrade_adapter'], functio
         }
     }
 });
+/*
+Adding the http provider here causes this error:
+Error: [filter:notarray] Expected array but received: {"_isScalar":false,"source":{"_isScalar":false},"operator":{}}
+*/
 // 'use strict';
 // angular.module('phonecat.core', [
 //   'ngResource'

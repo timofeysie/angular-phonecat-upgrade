@@ -1,5 +1,5 @@
-/** interface that explicitly defines what we expect the $routeParams object to contain when it is passed to the controller. 
- * This interface is not exported and is just used internally inside this module: */
+/** interface that explicitly defines what we expect the $routeParams object to contain 
+ * when it is passed to the controller. */
 interface PhoneRouteParams {
   phoneId: string
 }
@@ -15,7 +15,7 @@ class PhoneDetailCtrl {
     this.mainImageUrl = url;
   }
 }
-PhoneDetailCtrl.$inject = ['$routeParams', 'Phone'];
+PhoneDetailCtrl.$inject = ['$routeParams', 'phones'];
 export default PhoneDetailCtrl;
 
 /*

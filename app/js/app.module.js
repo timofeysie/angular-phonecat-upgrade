@@ -1,9 +1,9 @@
-System.register(['./core/core.module', './phone_list/phone_list.module', './phone_detail/phone_detail.module', 'angular2/upgrade'], function(exports_1) {
-    var core_module_1, phone_list_module_1, phone_detail_module_1, upgrade_1;
-    var upgrade, e;
+System.register(['./core/core.module', './phone_list/phone_list.module', './phone_detail/phone_detail.module', 'angular2/http', './core/upgrade_adapter'], function(exports_1) {
+    var core_module_1, phone_list_module_1, phone_detail_module_1, http_1, upgrade_adapter_1;
     function main() {
         try {
-            upgrade.bootstrap(document.body, ['phonecatApp']);
+            upgrade_adapter_1.default.addProvider(http_1.HTTP_PROVIDERS);
+            upgrade_adapter_1.default.bootstrap(document.body, ['phonecatApp']);
         }
         catch (e) {
             console.error(e);
@@ -25,8 +25,6 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
             otherwise({
             redirectTo: '/phones'
         });
-        // const upgradeAdapter = new UpgradeAdapter();
-        // upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
     }
     return {
         setters:[
@@ -39,17 +37,13 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
             function (phone_detail_module_1_1) {
                 phone_detail_module_1 = phone_detail_module_1_1;
             },
-            function (upgrade_1_1) {
-                upgrade_1 = upgrade_1_1;
+            function (http_1_1) {
+                http_1 = http_1_1;
+            },
+            function (upgrade_adapter_1_1) {
+                upgrade_adapter_1 = upgrade_adapter_1_1;
             }],
         execute: function() {
-            try {
-                upgrade = new upgrade_1.UpgradeAdapter();
-                console.log('upgrade adapter created');
-            }
-            catch (e) {
-                console.error('error', e);
-            }
             angular.module('phonecatApp', [
                 'ngAnimate',
                 'ngRoute',
@@ -61,20 +55,6 @@ System.register(['./core/core.module', './phone_list/phone_list.module', './phon
         }
     }
 });
-// This will boot the app, but PhoneListCtrl causes an unknown provider error
-// upgradeAdapter.bootstrap(document.body, ['phonecatApp']).ready(function() {
-//   console.log('yeah it does!');
-// });
-// const upgradeAdapter = new UpgradeAdapter();
-// upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
-// var upgradeAdapter = new UpgradeAdapter();
-// angular.element(document.body).ready(function() {
-//   upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
-// });
-// upgradeAdapter.addProvider(HTTP_PROVIDERS);
-// upgradeAdapter.bootstrap(document.documentElement, ['phonecatApp']);
-/* Before, angular was bootstrapped like this: */
-//angular.bootstrap(document.documentElement, ['phonecatApp']);
 /*
 We don't have to repeat the submodule name strings here. Since the modules export themselves,
 we can just refer to the name attribute of each of them.

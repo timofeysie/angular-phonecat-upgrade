@@ -15,7 +15,7 @@ System.register([], function(exports_1) {
                 };
                 return PhoneDetailCtrl;
             })();
-            PhoneDetailCtrl.$inject = ['$routeParams', 'Phone'];
+            PhoneDetailCtrl.$inject = ['$routeParams', 'phones'];
             exports_1("default",PhoneDetailCtrl);
         }
     }
