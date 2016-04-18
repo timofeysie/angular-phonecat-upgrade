@@ -1,8 +1,10 @@
+
 /** interface that explicitly defines what we expect the $routeParams object to contain 
  * when it is passed to the controller. */
 interface PhoneRouteParams {
   phoneId: string
 }
+
 class PhoneDetailCtrl {
   phone:any;
   mainImageUrl:string;

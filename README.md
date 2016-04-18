@@ -272,18 +272,19 @@ Causes a whole list of this error:
 Error: [filter:notarray] Expected array but received: {"_isScalar":false,"source":{"_isScalar":false},"operator":{}}
 
 
+
 ### Pase 2.2 Using Angular 2 component in Angular 1
 The file naming scheme is now Phone.ts, not feature.type.ts naming convention anymore.
 UpgradeAdapter has a downgradeNg2Provider method for the purpose of making Angular2 services available to Angular1 code. 
 We don't have our UpgradeAdapter available in core.module.ts where the Phones service should be registered. 
 We only have it in app.module.ts. There should only be one UpgradeAdapter in an application, 
-so we need to find a way to share our instance between the two code modules.
-Create a new module that instantiates UpgradeAdapter and exports the instance.
-We can then just pull it in wherever we need it, so that we're using the same object everywhere. 
+so we need to share our instance between the two code modules.
+So we create a new module that instantiates UpgradeAdapter and exports the instance to be used elsewhere.
 New file: app/js/core/upgrade_adapter.ts
 (Looks like the naming convention doesn't apply here).
 
-At this point, the app is showing a blank screen and no errors in the console, and no file not found on the network.  Not very helpful.
+At this point, the app is showing a blank screen and no errors in the console, and no file not found on the network.  
+Not very helpful.
 Definitely a bootstrap issue.
 There were some problems with the tests not being able to find the typings, so lots of errors in the console.
 I had to change the path after removing the typings for Jasmine which now come with Angular2. 
@@ -291,6 +292,77 @@ However, the mocks still cannot be found:
 test/test_helper.ts(2,1): error TS6053: File 'node_modules/angular2/typings/angularjs/angular-mocks.d.ts' not found.
 test/unit/checkmark.filter.spec.ts(6,14): error TS2349: Cannot invoke an expression whose type lacks a call signature.
 
+After this, we had the "Problem: No provider for Http DI Exception with hybrid Angular app" described below.
+
+### Problem: No provider for Http DI Exception with hybrid Angular app
+
+In phase 2.1 of the migration steps where an Angular2 serivce is being used by two Angular 1 controllers.
+After completing all the steps in the tutorial, there is a DI error:
+```
+Error: No provider for Http! (Phones -> Http)
+Error: DI Exception
+    at NoProviderError.BaseException [as constructor] 
+```
+I am injecting the http provider in the app.module.ts like this:
+```
+import {HTTP_PROVIDERS} from 'angular2/http';
+import upgradeAdapter from './core/upgrade_adapter';
+
+export function main() {
+  try {
+    upgradeAdapter.addProvider(HTTP_PROVIDERS);
+    upgradeAdapter.bootstrap(document.body, ['phonecatApp']);
+  } catch (e) {
+    console.error(e);
+  }
+}
+```
+Looking for this particular error on StackOverflow returns only discussions about Angular2 where injectables are specified on the @Component.
+But since we are talking about an Angulae 1 app, there is no @Component decorator.
+There are no other questions that deal with a hybrid app like this.
+
+Doing the following in the core.modules.ts
+```
+import {HTTP_PROVIDERS} from 'angular2/http';
+...
+upgradeAdapter.addProvider(HTTP_PROVIDERS);
+```
+Causes a whole list of this error:
+Error: [filter:notarray] Expected array but received: {"_isScalar":false,"source":{"_isScalar":false},"operator":{}}
+
+(This advice)[https://github.com/auth0/angular2-jwt/issues/28] worked for someone:
+try passing Http to the deps array?
+...
+import {Http} from 'angular2/http';
+...
+provide(AuthHttp, {
+  useFactory: (http) => {
+    return new AuthHttp(new AuthConfig(), http);
+  },
+  deps: [Http]
+})
+...
+
+Trying (this)[http://stackoverflow.com/questions/35719236/angular2-typescript-jspm-no-provider-for-http-app-provider-http] 
+    define the HTTP_PROVIDERS providers when bootstrapping your application:
+causes   this error:
+EXCEPTION: Error: [$injector:modulerr] Failed to instantiate module NG2_UPGRADE_0_ due to:
+Error: [$injector:modulerr] Failed to instantiate module function XHRBackend(_browserXHR, _baseResponseOptions) due to:
+Error: [$injector:itkn] Incorrect injection token! Expected service name as string, got {"dependencies":[null,null]}
+
+At the end of the tutorial they do this in a full Angular2 way:
+```
+bootstrap(AppComponent, [
+  HTTP_PROVIDERS,
+  ...
+  Phones
+]);
+```
+It seems like adding http to the providers list in bootstrap should work, but it doesn't.
+
+Anyhow, after getting the "Expected array but received: isScalar" error again, I removed the filters in the phone_list.html and all the errors went away.
+This sounds good, but instead, now, there is no phones list.  On the screen there are three empty containers where some phones should be, and nothing in the console.
+Not expected behavior for the app.
 
 ### Problem: Cannot find name 'module'.
 Sometime around the beginning of Phase 4, after running:
